@@ -4,7 +4,7 @@
 
 ## Features
 
-- **Expression Helper**: Load and apply expressions dynamically to layer properties.
+- **Expression Helper**: Load and apply expressions dynamically to layer properties. A "converter" is included and I will add documentation for how to use this. But an example json is included. (Note that adding 'user' to the dropdownPosition will add the expression to the property you currently have selected)
 - **Tools**: Various utilities for moving layers, linking to null objects, and more.
 - **Script Loader**: Run additional After Effects scripts directly from a user-friendly panel.
 
