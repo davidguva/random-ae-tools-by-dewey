@@ -59,8 +59,4 @@ This script was developed by David Guvå and was developed because I needed thes
 
 ## Contributing
 
-Contributions are always welcome! Please open an issue or submit a pull request with your suggestions. You can also connect with me on [Twitter/X](https://twitter.com/davidguva) or [Linkedin](https://www.linkedin.com/in/davidguva).
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE.md file for details.
+Contributions are always welcome! You can connect with me on [Twitter/X](https://twitter.com/davidguva) or [Linkedin](https://www.linkedin.com/in/davidguva).
