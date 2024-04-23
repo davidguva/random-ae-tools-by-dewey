@@ -28,6 +28,27 @@ Once the script is installed, you can activate it from the 'Window' menu in Afte
 - **Tools Tab**: Offers quick access to tools that can manipulate layer properties and enhance your project's structure.
 - **Script Loader Tab**: Allows you to manage and execute other JavaScript scripts saved within a specified directory.
 
+## The tools
+### Move Layers
+- Provides controls for moving selected layers horizontally or vertically by a specified distance. This utility is particularly useful for quickly adjusting layer positioning within your composition.
+
+### Link To Null
+- Facilitates linking selected layers to a newly created null object. This is beneficial for managing complex animations where multiple layers need to be controlled together.
+
+### Add Ruler at Anchor Point
+- Automatically adds guides at the anchor points of selected layers. This tool helps in precisely aligning elements within the composition without manual guide placement.
+
+### Center Anchor Point
+- Centers the anchor point of selected layers to their content. This tool is essential for properly setting rotation and scaling transformations from the desired point on a layer.
+
+### Scale Based on Selected
+- Scales selected layers based on the scale of the first selected layer. It ensures uniformity and consistency in layer sizes, which is critical in compositing and layout adjustments.
+
+### Position Based on Selected
+- Matches the position of all selected layers to that of the first selected layer. This feature is useful for quickly aligning multiple layers to a single point.
+
+**More tools will be added.**
+
 ## Support
 
 If you use the script and want to thank me you can always [buy me a coffee](https://buymeacoffee.com/davidguva).
