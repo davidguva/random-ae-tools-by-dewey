@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit and Download JSON</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        input[type="file"] {
+            margin-bottom: 10px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 12px 20px;
+            margin: 8px 0;
+            display: inline-block;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        textarea {
+            height: 100px; /* Larger text area */
+            resize: vertical; /* Allows the user to vertically resize the textarea */
+        }
+        div#jsonEditor {
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        div.groupContainer {
+            background: #918b8b;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+        .titleInput {
+    background-color: #3CBC8D;
+    color: white;
+    border: none; /* Optional: removes the border for a cleaner look */
+}
+label {
+    display: block;
+    font-size: 0.75em; /* Smaller font size */
+    font-weight: bold; /* Bold font */
+    margin-top: 5px; /* Add space above each label */
+}
+div#title {
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            font-weight: bold; /* Bold font */
+            text-align: center;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+    <div id="title">EXPRESSION CONVERTER:</div><P></P>
+    <input type="file" id="jsonFile" accept=".json">
+    <div id="jsonEditor" hidden></div>
+    
+    <button onclick="downloadJson()">Download JSON</button>
+
+    <script src="script.js"></script>
+</body>
+</html>
