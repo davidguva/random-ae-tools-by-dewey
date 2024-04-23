@@ -1,6 +1,6 @@
-# Random AE Tools by David
+# Random AE Tools by dewey
 
-"Random AE Tools by David" is a ScriptUI panel for Adobe After Effects designed to simplify and automate tasks using expressions and utilities, enhancing workflow efficiency for motion graphics artists.
+"Random AE Tools by dewey" is a ScriptUI panel for Adobe After Effects designed to simplify and automate tasks using expressions and utilities, enhancing workflow efficiency for motion graphics artists.
 
 ## Features
 
