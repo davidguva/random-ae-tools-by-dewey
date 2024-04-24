@@ -1,183 +1,4 @@
-"object" != typeof JSON && (JSON = {}),
-  (function () {
-    "use strict";
-    var rx_one = /^[\],:{}\s]*$/,
-      rx_two = /\\(?:["\\\/bfnrt]|u[0-9a-fA-F]{4})/g,
-      rx_three =
-        /"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g,
-      rx_four = /(?:^|:|,)(?:\s*\[)+/g,
-      rx_escapable =
-        /[\\"\u0000-\u001f\u007f-\u009f\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g,
-      rx_dangerous =
-        /[\u0000\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g,
-      gap,
-      indent,
-      meta,
-      rep;
-    function f(t) {
-      return t < 10 ? "0" + t : t;
-    }
-    function this_value() {
-      return this.valueOf();
-    }
-    function quote(t) {
-      return (
-        (rx_escapable.lastIndex = 0),
-        rx_escapable.test(t)
-          ? '"' +
-            t.replace(rx_escapable, function (t) {
-              var e = meta[t];
-              return "string" == typeof e
-                ? e
-                : "\\u" + ("0000" + t.charCodeAt(0).toString(16)).slice(-4);
-            }) +
-            '"'
-          : '"' + t + '"'
-      );
-    }
-    function str(t, e) {
-      var r,
-        n,
-        o,
-        u,
-        f,
-        a = gap,
-        i = e[t];
-      switch (
-        (i &&
-          "object" == typeof i &&
-          "function" == typeof i.toJSON &&
-          (i = i.toJSON(t)),
-        "function" == typeof rep && (i = rep.call(e, t, i)),
-        typeof i)
-      ) {
-        case "string":
-          return quote(i);
-        case "number":
-          return isFinite(i) ? String(i) : "null";
-        case "boolean":
-        case "null":
-          return String(i);
-        case "object":
-          if (!i) return "null";
-          if (
-            ((gap += indent),
-            (f = []),
-            "[object Array]" === Object.prototype.toString.apply(i))
-          ) {
-            for (u = i.length, r = 0; r < u; r += 1) f[r] = str(r, i) || "null";
-            return (
-              (o =
-                0 === f.length
-                  ? "[]"
-                  : gap
-                  ? "[\n" + gap + f.join(",\n" + gap) + "\n" + a + "]"
-                  : "[" + f.join(",") + "]"),
-              (gap = a),
-              o
-            );
-          }
-          if (rep && "object" == typeof rep)
-            for (u = rep.length, r = 0; r < u; r += 1)
-              "string" == typeof rep[r] &&
-                (o = str((n = rep[r]), i)) &&
-                f.push(quote(n) + (gap ? ": " : ":") + o);
-          else
-            for (n in i)
-              Object.prototype.hasOwnProperty.call(i, n) &&
-                (o = str(n, i)) &&
-                f.push(quote(n) + (gap ? ": " : ":") + o);
-          return (
-            (o =
-              0 === f.length
-                ? "{}"
-                : gap
-                ? "{\n" + gap + f.join(",\n" + gap) + "\n" + a + "}"
-                : "{" + f.join(",") + "}"),
-            (gap = a),
-            o
-          );
-      }
-    }
-    "function" != typeof Date.prototype.toJSON &&
-      ((Date.prototype.toJSON = function () {
-        return isFinite(this.valueOf())
-          ? this.getUTCFullYear() +
-              "-" +
-              f(this.getUTCMonth() + 1) +
-              "-" +
-              f(this.getUTCDate()) +
-              "T" +
-              f(this.getUTCHours()) +
-              ":" +
-              f(this.getUTCMinutes()) +
-              ":" +
-              f(this.getUTCSeconds()) +
-              "Z"
-          : null;
-      }),
-      (Boolean.prototype.toJSON = this_value),
-      (Number.prototype.toJSON = this_value),
-      (String.prototype.toJSON = this_value)),
-      "function" != typeof JSON.stringify &&
-        ((meta = {
-          "\b": "\\b",
-          "\t": "\\t",
-          "\n": "\\n",
-          "\f": "\\f",
-          "\r": "\\r",
-          '"': '\\"',
-          "\\": "\\\\",
-        }),
-        (JSON.stringify = function (t, e, r) {
-          var n;
-          if (((indent = gap = ""), "number" == typeof r))
-            for (n = 0; n < r; n += 1) indent += " ";
-          else "string" == typeof r && (indent = r);
-          if (
-            (rep = e) &&
-            "function" != typeof e &&
-            ("object" != typeof e || "number" != typeof e.length)
-          )
-            throw new Error("JSON.stringify");
-          return str("", { "": t });
-        })),
-      "function" != typeof JSON.parse &&
-        (JSON.parse = function (text, reviver) {
-          var j;
-          function walk(t, e) {
-            var r,
-              n,
-              o = t[e];
-            if (o && "object" == typeof o)
-              for (r in o)
-                Object.prototype.hasOwnProperty.call(o, r) &&
-                  (void 0 !== (n = walk(o, r)) ? (o[r] = n) : delete o[r]);
-            return reviver.call(t, e, o);
-          }
-          if (
-            ((text = String(text)),
-            (rx_dangerous.lastIndex = 0),
-            rx_dangerous.test(text) &&
-              (text = text.replace(rx_dangerous, function (t) {
-                return (
-                  "\\u" + ("0000" + t.charCodeAt(0).toString(16)).slice(-4)
-                );
-              })),
-            rx_one.test(
-              text
-                .replace(rx_two, "@")
-                .replace(rx_three, "]")
-                .replace(rx_four, "")
-            ))
-          )
-            return (
-              (j = eval("(" + text + ")")),
-              "function" == typeof reviver ? walk({ "": j }, "") : j
-            );
-          throw new SyntaxError("JSON.parse");
-        });
-  })();
+"object"!=typeof JSON&&(JSON={}),function(){"use strict";var gap,indent,meta,rep,rx_one=/^[\],:{}\s]*$/,rx_two=/\\(?:["\\\/bfnrt]|u[0-9a-fA-F]{4})/g,rx_three=/"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g,rx_four=/(?:^|:|,)(?:\s*\[)+/g,rx_escapable=/[\\"\u0000-\u001f\u007f-\u009f\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g,rx_dangerous=/[\u0000\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g;function f(t){return t<10?"0"+t:t}function this_value(){return this.valueOf()}function quote(t){return rx_escapable.lastIndex=0,rx_escapable.test(t)?'"'+t.replace(rx_escapable,function(t){var e=meta[t];return"string"==typeof e?e:"\\u"+("0000"+t.charCodeAt(0).toString(16)).slice(-4)})+'"':'"'+t+'"'}function str(t,e){var n,o,f,u,r,$=gap,i=e[t];switch(i&&"object"==typeof i&&"function"==typeof i.toJSON&&(i=i.toJSON(t)),"function"==typeof rep&&(i=rep.call(e,t,i)),typeof i){case"string":return quote(i);case"number":return isFinite(i)?String(i):"null";case"boolean":case"null":return String(i);case"object":if(!i)return"null";if(gap+=indent,r=[],"[object Array]"===Object.prototype.toString.apply(i)){for(n=0,u=i.length;n<u;n+=1)r[n]=str(n,i)||"null";return f=0===r.length?"[]":gap?"[\n"+gap+r.join(",\n"+gap)+"\n"+$+"]":"["+r.join(",")+"]",gap=$,f}if(rep&&"object"==typeof rep)for(n=0,u=rep.length;n<u;n+=1)"string"==typeof rep[n]&&(f=str(o=rep[n],i))&&r.push(quote(o)+(gap?": ":":")+f);else for(o in i)Object.prototype.hasOwnProperty.call(i,o)&&(f=str(o,i))&&r.push(quote(o)+(gap?": ":":")+f);return f=0===r.length?"{}":gap?"{\n"+gap+r.join(",\n"+gap)+"\n"+$+"}":"{"+r.join(",")+"}",gap=$,f}}"function"!=typeof Date.prototype.toJSON&&(Date.prototype.toJSON=function(){return isFinite(this.valueOf())?this.getUTCFullYear()+"-"+f(this.getUTCMonth()+1)+"-"+f(this.getUTCDate())+"T"+f(this.getUTCHours())+":"+f(this.getUTCMinutes())+":"+f(this.getUTCSeconds())+"Z":null},Boolean.prototype.toJSON=this_value,Number.prototype.toJSON=this_value,String.prototype.toJSON=this_value),"function"!=typeof JSON.stringify&&(meta={"\b":"\\b","	":"\\t","\n":"\\n","\f":"\\f","\r":"\\r",'"':'\\"',"\\":"\\\\"},JSON.stringify=function(t,e,n){var o;if(gap="",indent="","number"==typeof n)for(o=0;o<n;o+=1)indent+=" ";else"string"==typeof n&&(indent=n);if(rep=e,e&&"function"!=typeof e&&("object"!=typeof e||"number"!=typeof e.length))throw Error("JSON.stringify");return str("",{"":t})}),"function"!=typeof JSON.parse&&(JSON.parse=function(text,reviver){var j;function walk(t,e){var n,o,f=t[e];if(f&&"object"==typeof f)for(n in f)Object.prototype.hasOwnProperty.call(f,n)&&(void 0!==(o=walk(f,n))?f[n]=o:delete f[n]);return reviver.call(t,e,f)}if(text=String(text),rx_dangerous.lastIndex=0,rx_dangerous.test(text)&&(text=text.replace(rx_dangerous,function(t){return"\\u"+("0000"+t.charCodeAt(0).toString(16)).slice(-4)})),rx_one.test(text.replace(rx_two,"@").replace(rx_three,"]").replace(rx_four,"")))return j=eval("("+text+")"),"function"==typeof reviver?walk({"":j},""):j;throw SyntaxError("JSON.parse")})}();
 
 var scriptName = "random-ae-tools-by-david";
 var scriptNameS = "random-ae-tools-by-david-scriptFolder"
@@ -684,15 +505,30 @@ function loadData(fileSetting) {
   var filename = file.fsName;
   $.writeln(filename);
 
-  filepathText.text = "Settings File: " + file.name;
-  // Do something with the entered text here
-  file.open("r");
-  var rawJson = file.read();
-  file.close();
-  const content = JSON.parse(rawJson);
-  $.writeln(JSON.stringify(content));
+  filepathText.text = "Expression File: " + file.name;
 
-  createUI(content);
+  try {
+    // Attempt to open the file and parse the JSON
+    file.open("r");
+    var rawJson = file.read();
+    file.close();
+
+    const content = JSON.parse(rawJson); // This might throw if rawJson is not valid JSON
+    $.writeln(JSON.stringify(content));
+    createUI(content); // Assume this function uses the parsed JSON to create a UI
+  } catch (e) {
+    // Handle any errors that may have occurred in the try block
+    if (e instanceof SyntaxError) {
+      filepathText.text = "JSON error, please select another file";
+      $.writeln("Error parsing JSON: " + e.message);
+    } else if (e instanceof IOError) {
+      filepathText.text = "File error, could not read file";
+      $.writeln("IO Error: " + e.message);
+    } else {
+      filepathText.text = "Unknown error, please try again";
+      $.writeln("Unknown Error: " + e.message);
+    }
+  }
 }
 
 function createUI(content) {
