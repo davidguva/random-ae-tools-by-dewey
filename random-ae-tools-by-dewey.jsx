@@ -12,14 +12,10 @@ var thisObj = this instanceof Panel ? this : null;
 var panel =
   thisObj instanceof Panel
     ? thisObj
-    : new Window("palette", "Random AE Tools", undefined, {
+    : new Window("palette", "random-ae-tools-by-dewey", undefined, {
         resizeable: true,
         closeButton: true,
       });
-
-var headerTitle = panel.add("statictext", undefined, undefined);
-headerTitle.text = "Random AE Tools By David";
-headerTitle.justify = "center";
 
 // PANEL
 // =====
@@ -30,7 +26,7 @@ tpanel.margins = 0;
 // EXPRESSION HELPER TAB - TAB 01
 // ================================================================
 var tab1 = tpanel.add("tab", undefined, undefined);
-tab1.text = "Expression Helper";
+tab1.text = "Expression Loader";
 tab1.orientation = "column";
 tab1.alignChildren = ["left", "top"];
 tab1.spacing = 10;
@@ -303,13 +299,19 @@ createLinkNullB.onClick = function () {
 // FOOTER
 // ====================================================================================================
 var footer = panel.add("group", undefined);
-footer.orientation = "column";
+footer.orientation = "row";
 footer.alignChildren = ["center", "center"];
 footer.spacing = 5;
 footer.margins = 0;
 
-var footer01 = footer.add("statictext", undefined, undefined);
-footer01.text = "Made by David Guvå";
+
+var footer01b = footer.add("statictext", undefined, "Website and readme - ");
+var footer02b = footer.add(
+  "edittext",
+  undefined,
+  "github.com/davidguva/random-ae-tools-by-dewey"
+);
+
 var footerLow = panel.add("group", undefined);
 footerLow.orientation = "row";
 footerLow.alignChildren = ["center", "center"];
@@ -322,6 +324,11 @@ var footerLow2 = footerLow.add(
   undefined,
   "buymeacoffee.com/davidguva"
 );
+var footerLowB = panel.add("group", undefined);
+footerLowB.orientation = "row";
+footerLowB.alignChildren = ["center", "center"];
+var footer01 = footerLowB.add("statictext", undefined, undefined);
+footer01.text = "Made by David Guvå";
 
 //CHECK IF LAYER IS SELECTED MIDDLEWARE
 function checkSelected(callback) {
