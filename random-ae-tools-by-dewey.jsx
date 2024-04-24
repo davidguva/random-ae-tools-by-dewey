@@ -724,43 +724,48 @@ if (panel instanceof Window) {
   panel.layout.resize(true);
 }
 
-
 function loadScriptFolderData(fileSettingS) {
     filepathTextS.text = fileSettingS;
     var scriptsFolder = Folder(fileSettingS);
+    var scripts = scriptsFolder.getFiles("*.jsx");
 
-  var scripts = scriptsFolder.getFiles("*.jsx");
- // var scriptTextTestG = tab3.add("group", undefined, { name: "scriptGroupS" });
-// scriptTextTest = scriptTextTestG.add("statictext", undefined, undefined, {name: "scriptText"});
-// scriptTextTest.text = scripts.length;
+    for (var i = 0; i < scripts.length; i++) {
+        var scriptGroup = scriptPanel.add("group", undefined, { name: "scriptGroup" });
+        scriptGroup.orientation = "row";
+        scriptGroup.alignChildren = ["left", "center"];
+        scriptGroup.spacing = 10;
+        scriptGroup.margins = 0;
 
-  for (var i = 0; i < scripts.length; i++) {
-    var scriptGroup = scriptPanel.add("group", undefined, { name: "scriptGroup" });
-    scriptGroup.orientation = "row";
-    scriptGroup.alignChildren = ["left", "center"];
-    scriptGroup.spacing = 10;
-    scriptGroup.margins = 0;
+        var scriptFile = scripts[i];
+        var scriptText = scriptGroup.add("statictext", undefined, undefined, {name: "scriptText"});
+        var displayName = scriptFile.displayName.split('.').slice(0, -1).join('.');
+        scriptText.text = displayName;
+        scriptText.preferredSize.width = 200;
+        scriptText.alignment = ["left", "center"];
 
-    var scriptFile = scripts[i];
-    var scriptText = scriptGroup.add("statictext", undefined, undefined, {name: "scriptText"});
-    var displayName = scriptFile.displayName.split('.').slice(0, -1).join('.')
-   // scriptText.helpTip = "ScriptText Tooltip";
-    scriptText.text = displayName;
-    scriptText.preferredSize.width = 200;
-    scriptText.alignment = ["left", "center"];
+        // Reading the first line of the script file to check for tooltip
+        var file = new File(scriptFile.fsName);
+        if (file.open('r')) {
+            var firstLine = file.readln();
+            if (typeof firstLine === 'string' && firstLine.indexOf('//') === 0) {
+            //  alert(firstLine);
+                //var tooltip = firstLine.slice(2).trim(); // Changed from substring to slice
+               scriptText.helpTip = firstLine;
+            }
+            file.close();
+        }
 
-    var scriptButton = scriptGroup.add("button", undefined, undefined, {
-      name: "scriptButton",
-    });
-    scriptButton.text = "Run";
-    scriptButton.alignment = ["right", "bottom"];
-    scriptButton.script = scriptFile;
+        var scriptButton = scriptGroup.add("button", undefined, undefined, { name: "scriptButton" });
+        scriptButton.text = "Run";
+        scriptButton.alignment = ["right", "bottom"];
+        scriptButton.script = scriptFile;
 
-    scriptButton.onClick = function () {
-     // alert(this.script);
-      $.evalFile(this.script);
-    };
-  }
-  panel.layout.layout(true);
-  panel.layout.resize();
+        scriptButton.onClick = function () {
+            $.evalFile(this.script);
+        };
+    }
+    panel.layout.layout(true);
+    panel.layout.resize();
 }
+
+

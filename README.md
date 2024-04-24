@@ -26,7 +26,7 @@ Once the script is installed, you can activate it from the 'Window' menu in Afte
 
 - **Expression Helper Tab**: Simplifies the process of loading and applying expressions to your project layers.
 - **Tools Tab**: Offers quick access to tools that can manipulate layer properties and enhance your project's structure.
-- **Script Loader Tab**: Allows you to manage and execute other JavaScript scripts saved within a specified directory.
+- **Script Loader Tab**: Allows you to manage and execute your own After Effects scripts saved within a specified directory. There are some useful scripts to get you started in the scriptsFolder.  
 
 ## The tools
 #### Move Layers

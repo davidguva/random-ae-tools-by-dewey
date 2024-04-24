@@ -15,6 +15,7 @@ function multilineToSingleline(multiline) {
         .replace(/}/g, '\\\\}'); // Escape closing curly braces
     return `${escapedString}`;
 }
+
 document.getElementById('jsonFile').addEventListener('change', function() {
     if (!this.files.length) {
         alert('Please select a file first!');
@@ -27,78 +28,110 @@ document.getElementById('jsonFile').addEventListener('change', function() {
     reader.onload = function(event) {
         try {
             data = JSON.parse(event.target.result);
-            const editor = document.getElementById('jsonEditor');
-            editor.innerHTML = ''; // Clear previous entries
-            editor.removeAttribute('hidden');
-
-            data.forEach((item, index) => {
-                const container = document.createElement('div');
-                container.style.border = "1px solid #ccc";
-                container.style.padding = "10px";
-                container.style.marginBottom = "5px";
-
-                // Create title input with label
-                const titleLabel = document.createElement('label');
-                titleLabel.textContent = "Group Description:";
-                titleLabel.style.display = 'block';
-                container.appendChild(titleLabel);
-
-                const titleInput = document.createElement('input');
-                titleInput.className = 'titleInput';
-                titleInput.value = item.title;
-                titleInput.oninput = (e) => data[index].title = e.target.value;
-                container.appendChild(titleInput);
-
-                const maxDropdowns = Math.max(item.dropdownText.length, item.dropdownPosition.length, item.dropdownExpression.length);
-                for (let i = 0; i < maxDropdowns; i++) {
-                    const groupContainer = document.createElement('div');
-                    groupContainer.className = 'groupContainer'
-                    groupContainer.style.marginTop = "10px";
-
-                    // Create dropdownText input with label
-                    const dropdownTextLabel = document.createElement('label');
-                    dropdownTextLabel.textContent = `Expression title:`;
-                    dropdownTextLabel.style.display = 'block';
-                    groupContainer.appendChild(dropdownTextLabel);
-
-                    const dropdownTextInput = document.createElement('input');
-                    dropdownTextInput.value = item.dropdownText[i] || '';
-                    dropdownTextInput.oninput = (e) => data[index].dropdownText[i] = e.target.value;
-                    groupContainer.appendChild(dropdownTextInput);
-
-                    // Create dropdownPosition input with label
-                    const dropdownPositionLabel = document.createElement('label');
-                    dropdownPositionLabel.textContent = `Expression property position:`;
-                    dropdownPositionLabel.style.display = 'block';
-                    groupContainer.appendChild(dropdownPositionLabel);
-
-                    const dropdownPositionInput = document.createElement('input');
-                    dropdownPositionInput.value = item.dropdownPosition[i] || '';
-                    dropdownPositionInput.oninput = (e) => data[index].dropdownPosition[i] = e.target.value;
-                    groupContainer.appendChild(dropdownPositionInput);
-
-                    // Create dropdownExpression textarea with label
-                    const dropdownExpressionLabel = document.createElement('label');
-                    dropdownExpressionLabel.textContent = `Expression:`;
-                    dropdownExpressionLabel.style.display = 'block';
-                    groupContainer.appendChild(dropdownExpressionLabel);
-
-                    const dropdownExpressionTextarea = document.createElement('textarea');
-                    dropdownExpressionTextarea.value = singlelineToMultiline(item.dropdownExpression[i] || '');
-                    dropdownExpressionTextarea.oninput = (e) => data[index].dropdownExpression[i] = e.target.value;
-                    groupContainer.appendChild(dropdownExpressionTextarea);
-
-                    container.appendChild(groupContainer);
-                }
-
-                editor.appendChild(container);
-            });
+            renderEditor(data);
         } catch (e) {
             alert('Invalid JSON file.');
         }
     };
     reader.readAsText(file);
 });
+
+function renderEditor(data) {
+    const editor = document.getElementById('jsonEditor');
+    editor.innerHTML = ''; // Clear previous entries
+
+    data.forEach((item, index) => {
+        const container = document.createElement('div');
+        container.style.border = "1px solid #ccc";
+        container.style.padding = "10px";
+        container.style.marginBottom = "5px";
+
+        const titleInput = document.createElement('input');
+        titleInput.className = 'titleInput';
+        titleInput.value = item.title;
+        titleInput.oninput = (e) => data[index].title = e.target.value;
+        container.appendChild(titleInput);
+
+        // Button to remove the entire title group
+        const removeGroupBtn = document.createElement('button');
+        removeGroupBtn.textContent = 'Remove Group';
+        removeGroupBtn.className = 'removeButton';
+        removeGroupBtn.onclick = () => {
+            data.splice(index, 1);
+            renderEditor(data); // re-render the editor view
+        };
+        container.appendChild(removeGroupBtn);
+        
+        const maxDropdowns = Math.max(item.dropdownText.length, item.dropdownPosition.length, item.dropdownExpression.length);
+        for (let i = 0; i < maxDropdowns; i++) {
+            const groupContainer = document.createElement('div');
+            groupContainer.style.marginTop = "10px";
+            groupContainer.className = 'groupContainer';
+
+
+            // Button to remove this dropdown set
+            addDropdownFields('Expression Title', item.dropdownText, groupContainer, i, index);
+            const removeDropdownBtn = document.createElement('button');
+            removeDropdownBtn.textContent = 'Remove Expression';
+            
+            removeDropdownBtn.className = 'removeButton';
+            removeDropdownBtn.onclick = () => {
+                item.dropdownText.splice(i, 1);
+                item.dropdownPosition.splice(i, 1);
+                item.dropdownExpression.splice(i, 1);
+                renderEditor(data); // re-render the editor view
+            };
+            groupContainer.appendChild(removeDropdownBtn);
+            addDropdownFields('Position', item.dropdownPosition, groupContainer, i, index);
+            addDropdownFields('Expression', item.dropdownExpression, groupContainer, i, index, true);
+
+            container.appendChild(groupContainer);
+        }
+
+        // Button to add a new dropdown set
+        const addDropdownBtn = document.createElement('button');
+        addDropdownBtn.className = 'addButton';
+        addDropdownBtn.textContent = 'Add Expression';
+        addDropdownBtn.onclick = () => {
+            item.dropdownText.push('');
+            item.dropdownPosition.push('');
+            item.dropdownExpression.push('');
+            renderEditor(data); // re-render the editor view
+        };
+        container.appendChild(addDropdownBtn);
+        editor.appendChild(container);
+ 
+ 
+    });
+// Button to add a new group
+const addGroupBtn = document.createElement('button');
+addGroupBtn.className = 'addButton';
+addGroupBtn.textContent = 'Add New Group';
+addGroupBtn.onclick = () => {
+    const newGroup = {
+        title: '',
+        dropdownText: [''],
+        dropdownPosition: [''],
+        dropdownExpression: ['']
+    };
+    data.push(newGroup);
+    renderEditor(data);
+};
+editor.appendChild(addGroupBtn);
+    editor.removeAttribute('hidden');
+}
+
+function addDropdownFields(label, arr, container, i, index, isTextarea = false) {
+    const fieldLabel = document.createElement('label');
+    fieldLabel.textContent = `${label} - ${i+1}:`;
+    fieldLabel.style.display = 'block';
+    container.appendChild(fieldLabel);
+
+    const input = isTextarea ? document.createElement('textarea') : document.createElement('input');
+    input.value = arr[i] || '';
+    input.oninput = (e) => arr[i] = e.target.value;
+    container.appendChild(input);
+}
 
 function downloadJson() {
     // Prepare data for download by converting multiline fields back to single lines
